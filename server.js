@@ -8,6 +8,7 @@ var morgan      = require('morgan');
 var mongoose    = require('mongoose');
 var userController = require('./app/controllers/users');
 var vehicleTypeController = require('./app/controllers/vehicleTypes');
+var vehicleLocationController = require('./app/controllers/vehicleLocations');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var config = require('./config'); // get our config file
 var User   = require('./app/models/user'); // get our mongoose model
@@ -29,12 +30,17 @@ app.use(morgan('dev'));
 // =================================================================
 // routes ==========================================================
 // =================================================================
+// 
+//apiRoutes.route()
+app.post('/users/register',userController.registerUser);
+app.get('/users/verify-phone/:phone/:otp',userController.verifyPhone);
+app.get('/users/verify-email/:email/:evc',userController.verifyEmail);
 app.get('/setup', function(req, res) {
 
 	// create a sample user
 	var nick = new User({ 
-		username: 'samaybhavsar', 
-		password: 'password',
+		username: 'magesh', 
+		password: 'google',
 		admin: true 
 	});
 	nick.save(function(err) {
@@ -47,7 +53,7 @@ app.get('/setup', function(req, res) {
 
 // basic route (http://localhost:8080)
 app.get('/', function(req, res) {
-	res.send('Hello! The API is at http://localhost:' + port + '/api');
+	res.send('Hello! The API is at http://localhost:' + port + '/api/v1');
 });
 
 // ---------------------------------------------------------
@@ -91,7 +97,7 @@ apiRoutes.post('/authenticate', function(req, res) {
 
 		        console.log(user2);
 		        var token = jwt.sign(user, app.get('superSecret'), {
-					expiresInMinutes: 1440 // expires in 24 hours
+					expiresIn: "20000 days"// expires in 24 hours
 				});
 
 				res.json({
@@ -113,7 +119,7 @@ apiRoutes.post('/authenticate', function(req, res) {
 apiRoutes.use(function(req, res, next) {
 
 	// check header or url parameters or post parameters for token
-	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+	var token = req.body.token || req.query.token || req.headers['x-access-token'];
 
 	// decode token
 	if (token) {
@@ -144,10 +150,14 @@ apiRoutes.use(function(req, res, next) {
 
 apiRoutes.route('/users')
 .get(userController.getUsers);
+
 // ---------------------------------------------------------
 // authenticated routes
 // ---------------------------------------------------------
-// 
+//
+apiRoutes.route('/vehicleLocation')
+	.get(vehicleLocationController.getVehicleLocation)
+	.post(vehicleLocationController.postVehicleLocation);
 apiRoutes.route('/vehicleTypes')
 	.get(vehicleTypeController.getVehicleTypes)
 	.post(vehicleTypeController.postVehicleType);
@@ -170,7 +180,7 @@ apiRoutes.get('/check', function(req, res) {
 	res.json(req.decoded);
 });
 
-app.use('/api', apiRoutes);
+app.use('/api/v1', apiRoutes);
 
 // =================================================================
 // start the server ================================================

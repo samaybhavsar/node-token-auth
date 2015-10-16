@@ -1,0 +1,7 @@
+Hey |NAME|,
+
+Verify your email with Easymovr by clicking the confirmation link below:-
+
+Confirmation Link - |CONFIRMATIONLINK|
+
+Easymovr.com

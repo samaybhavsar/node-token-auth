@@ -12,7 +12,30 @@ var UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  first_name: {
+    type: String
+  },
+  last_name: {
+    type: String
+  },
+  country_code: {
+    type: String
+  },
+  phone: {
+    type: String
+  },
+  is_phone_verified: {
+    type: Number
+  },
+  email: {
+    type: String
+  },
+  is_email_verified: {
+    type: Number
+  },
+  otp: Number,
+  evc: String
 });
 
 // Execute before each user.save() call
@@ -36,10 +59,10 @@ UserSchema.pre('save', function(callback) {
 
 UserSchema.methods.verifyPassword = function(password, cb) {
     console.log('password:'+password+'-'+this.password);
-  bcrypt.compare(password, this.password, function(err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
+    bcrypt.compare(password, this.password, function(err, isMatch) {
+      if (err) return cb(err);
+      cb(null, isMatch);
+    });
 };
 
 // Export the Mongoose model
